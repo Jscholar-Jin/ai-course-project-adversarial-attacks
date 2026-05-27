@@ -43,3 +43,17 @@ scripts/     训练、攻击和评估脚本
 utils/       工具函数
 results/     实验结果
 configs/     配置文件
+
+## 4.Python 环境配置
+
+本项目基于 Python 和 PyTorch 实现，建议使用 Conda 创建独立环境运行。
+
+### 1. 创建 Conda 环境
+
+```bash
+conda create -n adv_attack python=3.9
+conda activate adv_attack
+
+
+pip install -r requirements.txt
+
