@@ -55,7 +55,7 @@ test_dataset = torchvision.datasets.CIFAR10(
     download=True,
     transform=transform
 )
-
+```
 ### 模型
 
 - Model A: ResNet18
