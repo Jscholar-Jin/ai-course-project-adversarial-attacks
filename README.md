@@ -16,8 +16,45 @@
 ## 2. 实验设置
 
 ### 数据集
+## CIFAR-10 官方下载地址
 
-- CIFAR-10
+CIFAR-10 官方页面：
+
+https://www.cs.toronto.edu/~kriz/cifar.html
+
+Python 版本压缩包：
+
+https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz
+
+## 数据集说明
+
+CIFAR-10 数据集包含 60000 张 32×32 彩色图像，共 10 个类别。其中训练集 50000 张，测试集 10000 张。
+
+## 推荐使用方式
+
+本项目推荐通过 `torchvision` 自动下载 CIFAR-10 数据集：
+
+```python
+import torchvision
+import torchvision.transforms as transforms
+
+transform = transforms.Compose([
+    transforms.ToTensor(),
+])
+
+train_dataset = torchvision.datasets.CIFAR10(
+    root="./data",
+    train=True,
+    download=True,
+    transform=transform
+)
+
+test_dataset = torchvision.datasets.CIFAR10(
+    root="./data",
+    train=False,
+    download=True,
+    transform=transform
+)
 
 ### 模型
 
