@@ -4,5 +4,3 @@ numpy
 pandas
 matplotlib
 tqdm
-pyyaml
-scikit-learn

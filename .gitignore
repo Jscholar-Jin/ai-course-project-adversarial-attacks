@@ -23,8 +23,13 @@ checkpoints/*
 
 # Logs
 *.log
+logs/
 runs/
 wandb/
+
+# Results
+results/
+figures/
 
 # Model weights
 *.pth

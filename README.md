@@ -1,97 +1,58 @@
-# ai-course-project-adversarial-attacks
-# Adversarial Attack Transferability
+# CIFAR-10 Adversarial Attacks
 
-本项目是人工智能课程大作业，主要研究图像分类模型中的对抗样本攻击与迁移攻击问题。实验基于 PyTorch 实现，比较了 FGSM、PGD、MI-FGSM 等典型攻击方法在白盒攻击和跨模型迁移攻击下的攻击成功率。
+This project trains two CIFAR-10 classifiers and compares adversarial attacks:
 
-## 1. 项目简介
+- white-box attack: `cnn -> cnn`
+- transfer attack: `resnet -> cnn`
+- attacks: `FGSM`, `PGD`, `MI-FGSM`
 
-随着深度神经网络在图像分类任务中的广泛应用，模型对微小扰动的鲁棒性问题受到关注。对抗样本通过在人眼几乎不可察觉的范围内添加扰动，可以导致模型预测错误。
+The main metric is how much accuracy drops on adversarial images. The scripts also
+report ASR, the attack success rate on samples that were classified correctly
+before the attack.
 
-本项目围绕以下问题展开：
-
-- 白盒攻击下，不同攻击方法对目标模型的影响；
-- 迁移攻击下，源模型生成的对抗样本能否攻击目标模型；
-- FGSM、PGD、MI-FGSM 在攻击成功率和扰动效果上的差异。
-
-## 2. 实验设置
-
-### 数据集
-## CIFAR-10 官方下载地址
-
-CIFAR-10 官方页面：
-
-https://www.cs.toronto.edu/~kriz/cifar.html
-
-Python 版本压缩包：
-
-https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz
-
-## 数据集说明
-
-CIFAR-10 数据集包含 60000 张 32×32 彩色图像，共 10 个类别。其中训练集 50000 张，测试集 10000 张。
-
-## 推荐使用方式
-
-本项目推荐通过 `torchvision` 自动下载 CIFAR-10 数据集：
-
-```python
-import torchvision
-import torchvision.transforms as transforms
-
-transform = transforms.Compose([
-    transforms.ToTensor(),
-])
-
-train_dataset = torchvision.datasets.CIFAR10(
-    root="./data",
-    train=True,
-    download=True,
-    transform=transform
-)
-
-test_dataset = torchvision.datasets.CIFAR10(
-    root="./data",
-    train=False,
-    download=True,
-    transform=transform
-)
-```
-### 模型
-
-- Model A: ResNet18
-- Model B: SimpleCNN
-
-### 攻击方法
-
-- FGSM
-- PGD
-- MI-FGSM
-
-### 扰动强度
-
-- epsilon = 8 / 255
-
-## 3. 项目结构
+## Files
 
 ```text
-models/      模型定义
-attacks/     对抗攻击算法
-scripts/     训练、攻击和评估脚本
-utils/       工具函数
-results/     实验结果
-configs/     配置文件
+models.py    model definitions
+attacks.py   FGSM, PGD, MI-FGSM
+train.py     train resnet/cnn checkpoints
+eval.py      run white-box and transfer attacks
+summary.py   merge results and draw figures
 ```
 
-## 4.Python 环境配置
+Generated files go to `checkpoints/`, `logs/`, `results/`, and `figures/`.
 
-本项目基于 Python 和 PyTorch 实现，建议使用 Conda 创建独立环境运行。
-
-### 1. 创建 Conda 环境
+## Setup
 
 ```bash
-conda create -n adv_attack python=3.9
-conda activate adv_attack
-
-
 pip install -r requirements.txt
+```
 
+## Run
+
+Download CIFAR-10 on the first run:
+
+```bash
+python train.py --model both --download
+```
+
+After checkpoints are saved:
+
+```bash
+python eval.py
+python summary.py
+```
+
+For a quick smoke run:
+
+```bash
+python train.py --model both --epochs 1 --download
+python eval.py --max-samples 256
+```
+
+## Defaults
+
+- data: `./data`
+- checkpoints: `./checkpoints/resnet.pt`, `./checkpoints/cnn.pt`
+- perturbation: `eps = 8/255`, `alpha = 2/255`, `steps = 10`
+- result CSV: `./results/attacks.csv`
