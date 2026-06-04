@@ -37,33 +37,53 @@ class CNN(nn.Module):
             nn.Linear(512, num_classes),
         )
 
+    def forward_features(self, x):
+        return self.features(x).flatten(1)
+
+    def forward_head(self, features):
+        return self.head(features)
+
     def forward(self, x):
-        return self.head(self.features(x))
+        return self.forward_head(self.forward_features(x))
 
 
-def resnet(num_classes=10):
-    try:
-        model = resnet18(weights=None)
-    except TypeError:
-        model = resnet18(pretrained=False)
+class ResNetCIFAR(nn.Module):
+    def __init__(self, num_classes=10):
+        super().__init__()
+        try:
+            backbone = resnet18(weights=None)
+        except TypeError:
+            backbone = resnet18(pretrained=False)
 
-    model.conv1 = nn.Conv2d(
-        3,
-        64,
-        kernel_size=3,
-        stride=1,
-        padding=1,
-        bias=False,
-    )
-    model.maxpool = nn.Identity()
-    model.fc = nn.Linear(model.fc.in_features, num_classes)
-    return model
+        backbone.conv1 = nn.Conv2d(
+            3,
+            64,
+            kernel_size=3,
+            stride=1,
+            padding=1,
+            bias=False,
+        )
+        backbone.maxpool = nn.Identity()
+        in_features = backbone.fc.in_features
+        backbone.fc = nn.Identity()
+
+        self.backbone = backbone
+        self.classifier = nn.Linear(in_features, num_classes)
+
+    def forward_features(self, x):
+        return self.backbone(x)
+
+    def forward_head(self, features):
+        return self.classifier(features)
+
+    def forward(self, x):
+        return self.forward_head(self.forward_features(x))
 
 
 def get_model(name):
     key = name.lower()
     if key == "resnet":
-        return resnet()
+        return ResNetCIFAR()
     if key == "cnn":
         return CNN()
     raise ValueError(f"unknown model: {name}")
@@ -71,7 +91,10 @@ def get_model(name):
 
 def load_model(name, path, device):
     model = get_model(name)
-    checkpoint = torch.load(path, map_location=device)
+    try:
+        checkpoint = torch.load(path, map_location=device, weights_only=False)
+    except TypeError:
+        checkpoint = torch.load(path, map_location=device)
     state = checkpoint.get("state_dict", checkpoint.get("model_state_dict", checkpoint))
     model.load_state_dict(state)
     model.to(device)
