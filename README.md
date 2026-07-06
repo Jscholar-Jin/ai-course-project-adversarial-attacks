@@ -56,7 +56,7 @@
 </div>
 
 
-### 2. 对抗样本可视化（四行对比）
+### 2. 对抗样本可视化
 
 <div align="center">
   <img src="figures/vis_4rows.png" alt="Adversarial Examples 4 Rows" width="90%">
@@ -165,7 +165,7 @@ python train_adv.py --model cnn --clean-checkpoint ./checkpoints/cnn.pt \
   --epochs 10 --batch-size 128 --eps 0.0313725 --clean-weight 0.5 --adv-weight 0.5
 ```
 
-#### 3. PGD 对抗训练（推荐）
+#### 3. PGD 对抗训练
 
 ```bash
 python train_adv_final.py --model cnn --init-checkpoint ./checkpoints/cnn.pt \
