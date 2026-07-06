@@ -121,7 +121,17 @@ CUDA available = True
 ```powershell
 pip install -r requirements.txt
 ```
+官方数据集下载页面：
 
+- https://www.cs.toronto.edu/~kriz/cifar.html
+
+如果使用本项目中的训练命令，并添加 `--download` 参数，程序会通过 `torchvision.datasets.CIFAR10` 自动下载数据集：
+
+```powershell
+& $PY train.py --model both --epochs 30 --batch-size 128 --workers 2 --download
+```
+
+下载后数据集会保存在代码中设置的 `data/` 或默认数据目录下。由于数据集文件较大，GitHub 仓库中不上传 `data/` 文件夹。
 ---
 
 ## 当前实验设置
