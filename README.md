@@ -108,68 +108,294 @@ requirements.txt                Python 依赖列表，用于配置运行环境
 
 ## 环境
 
-本机 GPU 环境可直接用：
+本机 GPU 环境可直接使用：
 
 ```powershell
-& 'E:\Anaconda\Anaconda\envs\PyTorch\python.exe'
+$PY = "E:\Anaconda\Anaconda\envs\PyTorch\python.exe"
 ```
 
-已验证：
+已验证环境：
 
-- `torch 2.7.1+cu118`
-- `CUDA available = True`
+```text
+torch 2.7.1+cu118
+CUDA available = True
+```
+
+也可以直接写成：
+
+```powershell
+& "E:\Anaconda\Anaconda\envs\PyTorch\python.exe" xxx.py
+```
+
+---
 
 ## 运行命令
 
-1. 训练标准模型：
+### 1. 训练标准 baseline 模型
+
+训练 `SimpleCNN` 和 `ResNet18` 两个标准模型：
 
 ```powershell
-& 'E:\Anaconda\Anaconda\envs\PyTorch\python.exe' train.py --model both --epochs 30 --batch-size 128 --workers 2 --download
+& $PY train.py --model both --epochs 30 --batch-size 128 --workers 2 --download
 ```
 
-2. 训练对抗训练模型：
+输出文件：
+
+```text
+checkpoints/cnn.pt
+checkpoints/resnet.pt
+logs/cnn.csv
+logs/resnet.csv
+```
+
+---
+
+### 2. FGSM 对抗训练
 
 ```powershell
-& 'E:\Anaconda\Anaconda\envs\PyTorch\python.exe' train.py --model cnn --training adv --attack pgd --epochs 15 --batch-size 128 --workers 2 --eps 0.0313725 --alpha 0.0078431 --steps 7 --lr 0.01 --init-checkpoint ./checkpoints/cnn.pt --clean-weight 0.5 --adv-weight 0.5
+& $PY train_adv.py --model cnn --clean-checkpoint ./checkpoints/cnn.pt --save-path ./checkpoints/cnn_fgsm_adv_train.pt --log-path ./logs/fgsm_adv_training_log.csv --epochs 10 --batch-size 128 --workers 2 --eps 0.0313725 --clean-weight 0.5 --adv-weight 0.5
 ```
 
-3. 运行评估：
+输出文件：
+
+```text
+checkpoints/cnn_fgsm_adv_train.pt
+logs/fgsm_adv_training_log.csv
+```
+
+---
+
+### 3. PGD 对抗训练最终版
 
 ```powershell
-& 'E:\Anaconda\Anaconda\envs\PyTorch\python.exe' eval.py --batch-size 128 --workers 2 --eps-list 2/255,4/255,8/255,12/255 --step-list 1,3,5,10 --jpeg-quality 75 --bit-depth 5 --output metrics.csv
+& $PY train_adv_final.py --model cnn --init-checkpoint ./checkpoints/cnn.pt --save-path ./checkpoints/cnn_pgd_adv_final.pt --log-path ./logs/pgd_adv_training_log.csv --epochs 20 --batch-size 128 --workers 2 --eps 0.0313725 --alpha 0.0078431 --train-pgd-steps 7 --eval-pgd-steps 10 --clean-weight 0.5 --adv-weight 0.5
 ```
 
-4. 生成汇总图：
+输出文件：
+
+```text
+checkpoints/cnn_pgd_adv_final.pt
+logs/pgd_adv_training_log.csv
+```
+
+---
+
+### 4. 评估白盒、迁移和黑盒攻击效果
 
 ```powershell
-& 'E:\Anaconda\Anaconda\envs\PyTorch\python.exe' summary.py
+& $PY eval_attacks.py --batch-size 128 --workers 2 --model-a resnet --checkpoint-a ./checkpoints/resnet.pt --model-b cnn --checkpoint-b ./checkpoints/cnn.pt --eps 0.0313725 --alpha 0.0078431 --steps 10 --deepfool-steps 20 --spsa-samples 16 --spsa-max-samples 1000
 ```
 
-5. 生成可视化：
+输出文件：
+
+```text
+results/attack_effect_results.csv
+figures/attack_adv_acc_bar.png
+figures/attack_asr_bar.png
+figures/all_attack_effects.png
+```
+
+---
+
+### 5. 扰动大小 eps 敏感性实验
 
 ```powershell
-& 'E:\Anaconda\Anaconda\envs\PyTorch\python.exe' visualize.py --model cnn --checkpoint ./checkpoints/cnn.pt --batch-size 128 --workers 2 --max-samples 384 --tsne-samples 384 --num-examples 4 --prefix vis
+& $PY eps.py --batch-size 128 --workers 2 --model-a resnet --checkpoint-a ./checkpoints/resnet.pt --model-b cnn --checkpoint-b ./checkpoints/cnn.pt --eps-list 2,4,8,12,16 --alpha 0.0078431 --steps 10 --deepfool-steps 20
 ```
+
+输出文件：
+
+```text
+results/eps_sensitivity.csv
+figures/eps_sensitivity_asr.png
+figures/eps_sensitivity_adv_acc.png
+```
+
+---
+
+### 6. 迭代次数 steps 敏感性实验
+
+```powershell
+& $PY steps.py --batch-size 128 --workers 2 --model-a resnet --checkpoint-a ./checkpoints/resnet.pt --model-b cnn --checkpoint-b ./checkpoints/cnn.pt --steps-list 1,3,5,10,20 --eps 0.0313725 --alpha 0.0078431
+```
+
+输出文件：
+
+```text
+results/steps_sensitivity.csv
+figures/steps_sensitivity_asr.png
+figures/steps_sensitivity_adv_acc.png
+results/transfer_deepfool_steps_sensitivity.csv
+figures/transfer_deepfool_steps_asr.png
+figures/transfer_deepfool_steps_adv_acc.png
+```
+
+---
+
+### 7. 评估 FGSM 对抗训练模型
+
+```powershell
+& $PY eval_adv.py --batch-size 128 --workers 2 --model-a resnet --checkpoint-a ./checkpoints/resnet.pt --model-b cnn --checkpoint-b-adv ./checkpoints/cnn_fgsm_adv_train.pt --eps 0.0313725 --alpha 0.0078431 --steps 10 --deepfool-steps 20 --spsa-samples 16 --spsa-max-samples 1000
+```
+
+输出文件：
+
+```text
+results/adv_training_eval_results.csv
+figures/adv_training_adv_acc_bar.png
+figures/adv_training_asr_bar.png
+```
+
+---
+
+### 8. 评估 PGD 对抗训练模型
+
+```powershell
+& $PY eval_adv.py --batch-size 128 --workers 2 --model-a resnet --checkpoint-a ./checkpoints/resnet.pt --model-b cnn --checkpoint-b-adv ./checkpoints/cnn_pgd_adv_final.pt --eps 0.0313725 --alpha 0.0078431 --steps 10 --deepfool-steps 20 --spsa-samples 16 --spsa-max-samples 1000
+```
+
+输出文件：
+
+```text
+results/adv_training_eval_results.csv
+figures/adv_training_adv_acc_bar.png
+figures/adv_training_asr_bar.png
+```
+
+---
+
+### 9. BPDA 自适应攻击评估
+
+```powershell
+& $PY eval_bpda_adaptive.py --model cnn --checkpoint ./checkpoints/cnn.pt --defenses jpeg,squeeze --jpeg-quality 75 --bit-depth 5 --batch-size 64 --workers 2 --eps 0.0313725 --alpha 0.0078431 --steps 10
+```
+
+输出文件：
+
+```text
+results/bpda_adaptive_results.csv
+figures/bpda_adaptive_adv_acc_bar.png
+figures/bpda_adaptive_asr_bar.png
+```
+
+---
+
+### 10. 生成汇总图
+
+```powershell
+& $PY summary.py
+```
+
+输出文件：
+
+```text
+figures/clean_acc.png
+figures/whitebox.png
+figures/white_eps.png
+figures/pgd_steps.png
+figures/transfer.png
+figures/adv_train.png
+figures/preprocess.png
+figures/adaptive.png
+results/summary.csv
+```
+
+---
+
+### 11. 生成攻击样本四行可视化图
+
+```powershell
+& $PY visualize_v3.py --model cnn --checkpoint ./checkpoints/cnn.pt --batch-size 128 --workers 2 --eps 0.0313725 --alpha 0.0078431 --steps 10 --deepfool-steps 20 --num-examples 4 --max-samples 1000 --output-name vis_4rows.png
+```
+
+输出文件：
+
+```text
+figures/vis_4rows.png
+```
+
+---
+
+### 12. 生成 t-SNE 特征分布图
+
+```powershell
+& $PY tsne.py --model cnn --checkpoint ./checkpoints/cnn.pt --attacks fgsm,pgd,deepfool --num-samples 300 --batch-size 64 --workers 2 --eps 0.0313725 --alpha 0.0078431 --steps 10 --deepfool-steps 20 --prefix tsne
+```
+
+输出文件：
+
+```text
+results/tsne_features.csv
+figures/tsne_clean_vs_attacks.png
+figures/tsne_clean_vs_each_attack.png
+figures/tsne_attack_success_selected.png
+```
+
+---
+
+### 13. 生成扰动放大图与脆弱类别分析
+
+```powershell
+& $PY visual_adv_diff_and_fragile.py --model cnn --checkpoint ./checkpoints/cnn.pt --attacks fgsm,pgd,deepfool --batch-size 128 --workers 2 --eps 0.0313725 --alpha 0.0078431 --steps 10 --deepfool-steps 20 --num-examples-per-attack 3 --magnify 12 --prefix fragile
+```
+
+输出文件：
+
+```text
+results/fragile_class_stats.csv
+results/fragile_samples.csv
+figures/adv_diff_examples.png
+figures/fragile_class_counts.png
+figures/fragile_class_asr.png
+```
+
+---
 
 ## 当前实验设置
 
-- 数据集：`CIFAR-10`
-- 白盒模型：`cnn`
-- 迁移源模型：`resnet`
-- 默认攻击预算：`eps = 8/255`
-- `PGD alpha = 2/255`
-- `PGD steps = 10`
-- `DeepFool steps = 20`
-- `JPEG quality = 75`
-- `Feature squeeze bit depth = 5`
+```text
+数据集：CIFAR-10
 
+源模型 Model A：ResNet18
+目标模型 Model B：SimpleCNN
+
+白盒攻击路径：Model B -> Model B
+迁移攻击路径：Model A -> Model B
+黑盒攻击路径：Query Model B -> Model B
+
+默认攻击预算：eps = 8/255
+PGD alpha：2/255
+PGD steps：10
+DeepFool steps：20
+SPSA samples：16
+SPSA max samples：1000
+
+JPEG quality：75
+Feature squeeze bit depth：5
+
+FGSM 对抗训练：
+clean weight = 0.5
+adv weight = 0.5
+
+PGD 对抗训练：
+train PGD steps = 7
+eval PGD steps = 10
+```
 ## 说明
 
-- `metrics.csv` 是完整实验表，适合后续写报告分析。
-- `summary.csv` 是整理后的摘要表。
-- `clean_acc.png` 展示干净样本精度与鲁棒性代价。
-- `whitebox.png`、`white_eps.png`、`pgd_steps.png` 分别展示白盒攻击强度、`eps` 影响和迭代次数影响。
-- `transfer.png`、`adv_train.png`、`preprocess.png`、`adaptive.png` 分别对应迁移攻击、防御对比、预处理防御、自适应攻击。
-- `vis_examples.png` 在一张图里同时展示 `FGSM`、`PGD`、`DeepFool` 的原图、对抗图、放大扰动。
-- `vis_tsne.png` 用于展示正常样本与对抗样本特征分布差异。
-- `vis_fragile.png` 和 `vis_fragile.csv` 给出可视化子集上的脆弱类别统计。
+metrics.csv 是通用评估表，适合后续写报告时查找完整实验指标。
+summary.csv 是整理后的摘要表，适合快速查看最终结论。
+attack_effect_results.csv 对应白盒、迁移和黑盒攻击总结果。
+eps_sensitivity.csv 和 steps_sensitivity.csv 分别对应参数敏感性实验。
+adv_training_eval_results.csv 对应 FGSM / PGD 对抗训练模型鲁棒性评估。
+bpda_adaptive_results.csv 对应输入预处理防御的 BPDA 自适应攻击评估。
+tsne_features.csv 保存 t-SNE 可视化所需的降维特征数据。
+fragile_class_stats.csv 和 fragile_samples.csv 用于分析最脆弱类别和最脆弱样本。
+
+clean_acc.png 展示干净样本精度与鲁棒性代价。
+whitebox.png、white_eps.png、pgd_steps.png 分别展示白盒攻击强度、eps 影响和迭代次数影响。
+transfer.png、adv_train.png、preprocess.png、adaptive.png 分别对应迁移攻击、防御对比、预处理防御和自适应攻击。
+vis_examples.png 和 vis_4rows.png 用于展示不同攻击方法生成的对抗样本。
+vis_tsne.png、tsne_clean_vs_attacks.png 和 tsne_clean_vs_each_attack.png 用于展示正常样本与对抗样本特征分布差异。
+adv_diff_examples.png 展示原图、放大扰动和对抗样本。
+vis_fragile.png、fragile_class_counts.png 和 fragile_class_asr.png 用于展示脆弱类别统计。
