@@ -10,7 +10,19 @@
 [![CUDA](https://img.shields.io/badge/CUDA-11.8%2B-76B900?logo=nvidia&logoColor=white)](https://developer.nvidia.com/cuda-toolkit)
 
 **研究对抗攻击的迁移性、黑盒攻击能力，以及多种防御策略的有效性**
+---
 
+# 人员分工
+
+| 成员 | 负责内容 |
+|------|----------|
+| **金纪勇** | 项目总体设计与统筹；SimpleCNN、ResNet18 模型训练；FGSM、PGD、MI-FGSM、DeepFool、SPSA 攻击算法实现；JPEG 压缩、Feature Squeezing、BPDA 防御实现；FGSM/PGD 对抗训练；实验设计、结果分析、GitHub 项目整理及实验报告撰写。 |
+| **周杨** | 数据集整理与预处理；模型训练流程调试；攻击实验与防御实验运行；实验数据统计与结果整理；协助实验验证。 |
+| **程湜** | 攻击效果评估模块实现；白盒攻击、迁移攻击、黑盒攻击实验测试；EPS、Steps 敏感性实验；实验结果汇总与图表制作。 |
+| **廖苒希** | 对抗样本可视化；t-SNE 特征分布分析；扰动放大与脆弱类别统计；实验图片整理；协助实验结果分析。 |
+| **朱子淼** | 项目文档整理；README 编写与维护；PPT 制作；实验报告排版；GitHub 项目维护与成果展示。 |
+
+---
 </div>
 
 ---
