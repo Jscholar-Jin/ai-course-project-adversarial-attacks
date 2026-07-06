@@ -1,0 +1,9 @@
+﻿defense,experiment,attack_name,method_label,source_model,target_model,eps_255,alpha_255,steps,total_samples,clean_acc,adv_acc,asr
+fgsm_adversarial_training,white-box,fgsm,White-box FGSM,Adv-trained Model B,Adv-trained Model B,8.0,2.0,10,10000,83.37,47.48,43.06105313661989
+fgsm_adversarial_training,white-box,pgd,White-box PGD,Adv-trained Model B,Adv-trained Model B,8.0,2.0,10,10000,83.37,35.53,57.38275158930071
+fgsm_adversarial_training,white-box,deepfool,White-box DeepFool,Adv-trained Model B,Adv-trained Model B,8.0,2.0,10,10000,83.37,68.77,26.47235216504738
+fgsm_adversarial_training,transfer,fgsm,Transfer FGSM,Model A,Adv-trained Model B,8.0,2.0,10,10000,83.37,79.2,5.3376514333693175
+fgsm_adversarial_training,transfer,pgd,Transfer PGD,Model A,Adv-trained Model B,8.0,2.0,10,10000,83.37,80.91000000000001,3.1546119707328777
+fgsm_adversarial_training,transfer,mi-fgsm,Transfer MI-FGSM,Model A,Adv-trained Model B,8.0,2.0,10,10000,83.37,79.81,4.605973371716445
+fgsm_adversarial_training,transfer,deepfool,Transfer DeepFool,Model A,Adv-trained Model B,8.0,2.0,10,10000,83.37,83.17999999999999,0.2518891687657431
+fgsm_adversarial_training,black-box,spsa,Black-box SPSA,Query Adv-trained Model B,Adv-trained Model B,8.0,2.0,10,1000,84.39999999999999,75.7,10.308056872037914

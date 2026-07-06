@@ -1,0 +1,9 @@
+﻿experiment,attack_name,method_label,source_model,target_model,eps_255,alpha_255,steps,total_samples,clean_acc,adv_acc,asr
+white-box,fgsm,White-box FGSM,Model B,Model B,8.0,2.0,10,10000,91.53999999999999,11.97,86.95652173913044
+white-box,pgd,White-box PGD,Model B,Model B,8.0,2.0,10,10000,91.53999999999999,0.26,99.71597116014857
+white-box,deepfool,White-box DeepFool,Model B,Model B,8.0,2.0,10,10000,91.53999999999999,17.59,86.53047847935329
+transfer,fgsm,Transfer FGSM,Model A,Model B,8.0,2.0,10,10000,91.53999999999999,38.96,57.734323792877426
+transfer,pgd,Transfer PGD,Model A,Model B,8.0,2.0,10,10000,91.53999999999999,20.26,77.87852305003278
+transfer,mi-fgsm,Transfer MI-FGSM,Model A,Model B,8.0,2.0,10,10000,91.53999999999999,12.78,86.06073847498361
+transfer,deepfool,Transfer DeepFool,Model A,Model B,8.0,2.0,10,10000,91.53999999999999,89.17,2.8730609569587067
+black-box,spsa,Black-box SPSA,Query Model B,Model B,8.0,2.0,10,1000,91.7,41.9,54.30752453653217

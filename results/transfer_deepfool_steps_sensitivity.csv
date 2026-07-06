@@ -1,0 +1,6 @@
+﻿experiment,attack_name,method_label,source_model,target_model,eps_255,alpha_255,steps,deepfool_steps,total_samples,clean_acc,adv_acc,asr
+transfer,deepfool,Transfer DeepFool,Model A,Model B,8.0,2.0,1,1,10000,91.53999999999999,89.46,2.5562595586628793
+transfer,deepfool,Transfer DeepFool,Model A,Model B,8.0,2.0,3,3,10000,91.53999999999999,89.18,2.8621367708105745
+transfer,deepfool,Transfer DeepFool,Model A,Model B,8.0,2.0,5,5,10000,91.53999999999999,89.17,2.8730609569587067
+transfer,deepfool,Transfer DeepFool,Model A,Model B,8.0,2.0,10,10,10000,91.53999999999999,89.17,2.8730609569587067
+transfer,deepfool,Transfer DeepFool,Model A,Model B,8.0,2.0,20,20,10000,91.53999999999999,89.17,2.8730609569587067

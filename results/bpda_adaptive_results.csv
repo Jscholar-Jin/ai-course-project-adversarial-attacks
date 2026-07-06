@@ -1,0 +1,3 @@
+﻿defense,defense_label,attack_name,method_label,eps_255,alpha_255,steps,jpeg_quality,bit_depth,total_samples,clean_acc,adv_acc,asr
+jpeg,JPEG Compression,pgd_bpda,JPEG Compression + PGD-BPDA,8.0,2.0,10,75,,10000,84.04,2.32,97.23940980485483
+squeeze,Feature Squeezing,pgd_bpda,Feature Squeezing + PGD-BPDA,8.0,2.0,10,,5,10000,91.33,0.29,99.68247016314464
