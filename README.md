@@ -108,31 +108,154 @@
 
 ```text
 ai-course-project-adversarial-attacks/
-├── models.py                 # 模型定义（SimpleCNN + ResNet18）
-├── data_utils.py             # CIFAR-10 数据加载与预处理
-├── attacks.py                # 核心攻击实现（FGSM/PGD/MI-FGSM/DeepFool/SPSA）
-├── defenses.py               # 防御方法（JPEG、位深压缩、BPDA）
-├── train.py                  # Baseline 模型训练
-├── train_adv.py              # FGSM 对抗训练
-├── train_adv_final.py        # PGD 对抗训练（最终版）
-├── eval_attacks.py           # 攻击效果评估
-├── eval_adv.py               # 对抗训练模型评估
-├── eval_bpda_adaptive.py     # BPDA 自适应攻击评估
-├── eps.py / steps.py         # 参数敏感性实验
-├── tsne.py                   # t-SNE 特征可视化
-├── visualize_v3.py           # 对抗样本四行可视化
-├── visual_adv_diff_and_fragile.py  # 脆弱样本分析
-├── summary.py                # 结果汇总
+│
+├── models.py
+│   ├── SimpleCNN 模型定义
+│   ├── ResNet18 模型定义
+│   └── 模型加载接口
+│
+├── data_utils.py
+│   ├── CIFAR-10 数据集下载
+│   ├── 数据预处理
+│   ├── DataLoader 构建
+│   └── 随机种子设置
+│
+├── attacks.py
+│   ├── FGSM
+│   ├── PGD
+│   ├── MI-FGSM
+│   ├── DeepFool
+│   ├── SPSA
+│   └── 统一攻击接口
+│
+├── defenses.py
+│   ├── JPEG Compression
+│   ├── Feature Squeezing
+│   ├── BPDA（Backward Pass Differentiable Approximation）
+│   └── 输入预处理模块
+│
+├── train.py
+│   └── Baseline 模型训练（SimpleCNN / ResNet18）
+│
+├── train_adv.py
+│   └── FGSM 对抗训练
+│
+├── train_adv_final.py
+│   └── PGD 对抗训练（最终版）
+│
+├── eval.py
+│   └── 通用评估接口
+│
+├── eval_attacks.py
+│   ├── 白盒攻击评估
+│   ├── 迁移攻击评估
+│   └── 黑盒攻击评估
+│
+├── eval_adv.py
+│   ├── FGSM 对抗训练模型评估
+│   └── PGD 对抗训练模型评估
+│
+├── eval_bpda_adaptive.py
+│   └── BPDA 自适应攻击评估
+│
+├── eps.py
+│   └── EPS 扰动大小敏感性实验
+│
+├── steps.py
+│   └── PGD 迭代次数敏感性实验
+│
+├── summary.py
+│   ├── 实验结果汇总
+│   ├── 统计表生成
+│   └── 对比图绘制
+│
+├── tsne.py
+│   ├── 特征提取
+│   ├── t-SNE 降维
+│   └── 特征分布可视化
+│
+├── visualize_v3.py
+│   └── Clean / FGSM / PGD / DeepFool 四行可视化
+│
+├── visual_adv_diff_and_fragile.py
+│   ├── 原图-扰动-对抗样本对比
+│   ├── 扰动放大显示
+│   ├── 脆弱类别统计
+│   └── 脆弱样本分析
+│
 ├── requirements.txt
+│   └── Python 依赖库
+│
 ├── README.md
-├── checkpoints/              # 模型权重（需自行训练）
-├── logs/                     # 训练日志
-├── results/                  # 实验结果 CSV
-└── figures/                  # 可视化图片（27 张）
+│   └── 项目说明文档
+│
+├── contribution.txt
+│   └── 项目成员分工说明
+│
+├── checkpoints/
+│   ├── cnn.pt
+│   ├── resnet.pt
+│   ├── cnn_fgsm_adv_train.pt
+│   └── cnn_pgd_adv_final.pt
+│
+├── logs/
+│   ├── cnn.csv
+│   ├── resnet.csv
+│   ├── fgsm_adv_training_log.csv
+│   └── pgd_adv_training_log.csv
+│
+├── results/
+│   ├── attack_effect_results.csv
+│   ├── eps_sensitivity.csv
+│   ├── steps_sensitivity.csv
+│   ├── transfer_deepfool_steps_sensitivity.csv
+│   ├── adv_training_eval_results.csv
+│   ├── bpda_adaptive_results.csv
+│   ├── tsne_features.csv
+│   ├── fragile_class_stats.csv
+│   ├── fragile_samples.csv
+│   └── summary.csv
+│
+└── figures/
+    ├── 攻击效果图
+    │   ├── all_attack_effects.png
+    │   ├── attack_adv_acc_bar.png
+    │   └── attack_asr_bar.png
+    │
+    ├── 参数敏感性分析
+    │   ├── eps_sensitivity_adv_acc.png
+    │   ├── eps_sensitivity_asr.png
+    │   ├── steps_sensitivity_adv_acc.png
+    │   ├── steps_sensitivity_asr.png
+    │   ├── transfer_deepfool_steps_adv_acc.png
+    │   └── transfer_deepfool_steps_asr.png
+    │
+    ├── 防御实验
+    │   ├── adv_training_adv_acc_bar.png
+    │   ├── adv_training_asr_bar.png
+    │   ├── bpda_adaptive_adv_acc_bar.png
+    │   └── bpda_adaptive_asr_bar.png
+    │
+    ├── 可视化分析
+    │   ├── vis_4rows.png
+    │   ├── vis_examples.png
+    │   ├── adv_diff_examples.png
+    │   ├── tsne_clean_vs_attacks.png
+    │   ├── tsne_clean_vs_each_attack.png
+    │   ├── tsne_attack_success_selected.png
+    │   ├── fragile_class_counts.png
+    │   └── fragile_class_asr.png
+    │
+    └── 汇总图
+        ├── clean_acc.png
+        ├── whitebox.png
+        ├── white_eps.png
+        ├── pgd_steps.png
+        ├── transfer.png
+        ├── preprocess.png
+        ├── adv_train.png
+        └── adaptive.png
 ```
-
----
-
 ## 🚀 快速开始
 
 ### 环境配置
