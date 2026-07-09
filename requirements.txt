@@ -1,8 +1,9 @@
-torch
-torchvision
-numpy
-pandas
-matplotlib
-tqdm
-Pillow
-scikit-learn
+torch>=2.7.0
+torchvision>=0.22.0
+numpy>=1.24.0
+matplotlib>=3.8.0
+pandas>=2.2.0
+scikit-learn>=1.5.0
+opencv-python>=4.10.0
+Pillow>=10.0.0
+tqdm>=4.66.0
